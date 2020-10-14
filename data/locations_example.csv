@@ -1,0 +1,14 @@
+place,name,number,uf,city,lat_lon,lat,lon,region
+depot,Rua José Antônio,119,MS,Campo Grande,"-20.469294,-54.6097475",-20.469294,-54.6097475,center
+home1,Rua Edward de Oliveira,108,MS,Campo Grande,"-20.4734292,-54.626858",-20.4734292,-54.626858,center
+home2,Rua Cubatão,68,MS,Campo Grande,"-20.479744,-54.6266117",-20.479744,-54.6266117,center
+home3,Rua Jacarepaguá,167,MS,Campo Grande,"-20.4705013,-54.5819829",-20.4705013,-54.5819829,east
+home4,Rua Acariuba,482,MS,Campo Grande,"-20.5553612,-54.58061",-20.5553612,-54.58061,south
+home5,Rua Santa Elvira,614,MS,Campo Grande,"-20.4209214,-54.6461374",-20.4209214,-54.6461374,north
+home6,Rua Manoel Taveira,428,MS,Campo Grande,"-20.45724,-54.6853366",-20.45724,-54.6853366,west
+home7,Rua Faro,64,MS,Campo Grande,"-20.5047915,-54.6766253",-20.5047915,-54.6766253,west
+home8,Rua Lago Paranoá,137,MS,Campo Grande,"-20.507101,-54.6108219",-20.507101,-54.6108219,south
+home9,Av dos Eucalíptos,30,MS,Campo Grande,"-20.4213302,-54.5932812",-20.4213302,-54.5932812,north
+home10,Rua Serra Nevada,171,MS,Campo Grande,"-20.464044,-54.5793897",-20.464044,-54.5793897,east
+home11,Rua Orfeu Bais,268,MS,Campo Grande,"-20.4696417,-54.6260447",-20.4696417,-54.6260447,center
+home12,Rua Arpoador,174,MS,Campo Grande,"-20.478822,-54.6316387",-20.478822,-54.6316387,center

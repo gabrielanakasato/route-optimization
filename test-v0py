@@ -19,32 +19,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from streamlit_folium import folium_static
 
-# TITLE
-st.title('Otimizador de Rotas')
-
-# Necessary information
-chrome_path = 'D:/dist/chromedriver.exe'
-
-uf = ('-', 'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', ' ES', 'GO', 'MA', 'MT', 'MS', 'MG',
-      'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO')
-
-# Example of locations
-locations_example = pd.read_csv('data/locations_example.csv')
-matrices_example = pd.read_csv('data/matrices_example.csv')
-
-# Convert string to list
-matrices_example['dist_matrix'] = matrices_example['dist_matrix'].apply(ast.literal_eval)
-matrices_example['time_matrix'] = matrices_example['time_matrix'].apply(ast.literal_eval)
-
-# DEPOT
-st.header('Sua Localização')
-
 
 def input_address_depot(df_example):
 
     '''
     Creates and returns a dictionary with the depot's address.
-    :param df_example:
     :return:
     '''
 
@@ -73,68 +52,7 @@ def input_address_depot(df_example):
     else:
         st.markdown(f"Sua localização é **{depot_address_complete}**.")
 
-    if (address_dict['name'].lower() == df_example.loc[df_example.index == 0, 'name'][0].lower()) and \
-            (address_dict['number'] == str(df_example.loc[df_example.index == 0, 'number'][0])) and \
-            (address_dict['uf'].lower() == df_example.loc[df_example.index == 0, 'uf'][0].lower()) and \
-            (address_dict['city'].lower() == df_example.loc[df_example.index == 0, 'city'][0].lower()):
-
-        # If the example is being used
-        address_dict['lat_lon'] = df_example.loc[df_example.index == 0, 'lat_lon'][0]
-        address_dict['lat'] = df_example.loc[df_example.index == 0, 'lat'][0]
-        address_dict['lon'] = df_example.loc[df_example.index == 0, 'lon'][0]
-        st.markdown(f'Coordenadas: {address_dict["lat"]}, {address_dict["lon"]}')
-    else:
-        # Search the coordinates on Google Maps using Selenium
-        get_depot_coordinate = st.checkbox(f'Enviar sua localização')
-        if get_depot_coordinate:
-            address_dict['lat_lon'] = search_coordinates(address_dict)
-            address_dict['lat'] = re.findall('-*\d+\.+\d*,', address_dict['lat_lon'])[0].replace(',', '')
-            address_dict['lon'] = re.findall(',-*\d+\.+\d*', address_dict['lat_lon'])[0].replace(',', '')
-            st.markdown(f'Coordenadas: {address_dict["lat"]}, {address_dict["lon"]}')
-
     return address_dict
-
-
-def search_coordinates(address_dict):
-    url = 'https://www.google.com.br/maps/place/'
-    address_name = address_dict['name']
-    address_number = address_dict['number']
-    address_uf = address_dict['uf']
-    address_city = address_dict['city']
-    url_complete = url + address_name.replace(' ', '+').lower() + ',+' + address_number + ',+' \
-                   + address_city.replace(' ', '+').lower() + ',+' + address_uf.lower()
-
-    # Open the Chrome browser
-    chrome_options = Options()
-    chrome_options.headless = True
-    driver = webdriver.Chrome(executable_path=chrome_path, options=chrome_options)
-
-    # Navigate to webpage
-    driver.get(url_complete)
-
-    # Wait 3 seconds
-    time.sleep(4)
-
-    # Save the current url in a variable (which contains the coordinates)
-    updated_url = driver.current_url
-
-    # Close the browser
-    driver.close()
-
-    # Get the coordinates in a string
-    coordinates = re.findall('-*\d+\.+\d*,-*\d+\.+\d*', updated_url)[0]
-
-    st.markdown('**Localização recebida**')
-
-    return coordinates
-
-
-depot_address = input_address_depot(locations_example)
-st.write(depot_address)
-
-# DELIVERIES
-st.header('Entregas')
-
 
 
 def input_address_delivery(index, df_example):
@@ -190,7 +108,7 @@ def input_address_delivery(index, df_example):
         st.markdown(f'Coordenadas: {address_dict["lat"]}, {address_dict["lon"]}')
     else:
         # Search the coordinates on Google Maps using Selenium
-        get_depot_coordinate = st.checkbox(f'Enviar localização da Entrega {index}')
+        get_depot_coordinate = st.button(f'Enviar localização da Entrega {index}')
         if get_depot_coordinate:
             address_dict['lat_lon'] = search_coordinates(address_dict)
             address_dict['lat'] = re.findall('-*\d+\.+\d*,', address_dict['lat_lon'])[0].replace(',', '')
@@ -200,29 +118,126 @@ def input_address_delivery(index, df_example):
     return address_dict
 
 
+def search_coordinates(address_dict):
+    url = 'https://www.google.com.br/maps/place/'
+    address_name = address_dict['name']
+    address_number = address_dict['number']
+    address_uf = address_dict['uf']
+    address_city = address_dict['city']
+    url_complete = url + address_name.replace(' ', '+').lower() + ',+' + address_number + ',+' \
+                   + address_city.replace(' ', '+').lower() + ',+' + address_uf.lower()
+
+    # Open the Chrome browser
+    chrome_options = Options()
+    chrome_options.headless = True
+    driver = webdriver.Chrome(executable_path=chrome_path, options=chrome_options)
+
+    # Navigate to webpage
+    driver.get(url_complete)
+
+    # Wait 3 seconds
+    time.sleep(4)
+
+    # Save the current url in a variable (which contains the coordinates)
+    updated_url = driver.current_url
+
+    # Close the browser
+    driver.close()
+
+    # Get the coordinates in a string
+    coordinates = re.findall('-*\d+\.+\d*,-*\d+\.+\d*', updated_url)[0]
+
+    st.markdown('**Localização recebida**')
+
+    return coordinates
+
+
+# Start Streamlit
+add_selectbox = st.sidebar.radio(
+    "How would you like to be contacted?",
+    ("Email", "Home phone", "Mobile phone")
+)
+
+# TITLE
+st.title('Otimizador de Rotas')
+
+
+# Necessary information
+chrome_path = 'D:/dist/chromedriver.exe'
+
+uf = ('-', 'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', ' ES', 'GO', 'MA', 'MT', 'MS', 'MG',
+      'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO')
+
+# Example of locations
+locations_example = pd.read_csv('data/locations_example.csv')
+matrices_example = pd.read_csv('data/matrices_example.csv')
+
+# Convert string to list
+matrices_example['dist_matrix'] = matrices_example['dist_matrix'].apply(ast.literal_eval)
+matrices_example['time_matrix'] = matrices_example['time_matrix'].apply(ast.literal_eval)
+
+# DEPOT
+st.header('Sua Localização')
+
+depot_address = input_address_depot(locations_example)
+
+
+if (depot_address['name'].lower() == locations_example.loc[locations_example.index == 0, 'name'][0].lower()) and \
+   (depot_address['number'] == str(locations_example.loc[locations_example.index == 0, 'number'][0])) and \
+   (depot_address['uf'].lower() == locations_example.loc[locations_example.index == 0, 'uf'][0].lower()) and \
+   (depot_address['city'].lower() == locations_example.loc[locations_example.index == 0, 'city'][0].lower()):
+
+    # If the example is being used
+    depot_address['lat_lon'] = locations_example.loc[locations_example['place'] == 'depot', 'lat_lon'][0]
+    depot_address['lat'] = locations_example.loc[locations_example['place'] == 'depot', 'lat'][0]
+    depot_address['lon'] = locations_example.loc[locations_example['place'] == 'depot', 'lon'][0]
+    st.markdown(f'Coordenadas: {depot_address["lat"]}, {depot_address["lon"]}')
+else:
+    # Search the coordinates on Google Maps using Selenium
+    get_depot_coordinate = st.button('Enviar localização')
+    if get_depot_coordinate:
+        depot_address['lat_lon'] = search_coordinates(depot_address)
+        depot_address['lat'] = re.findall('-*\d+\.+\d*,', depot_address['lat_lon'])[0].replace(',', '')
+        depot_address['lon'] = re.findall(',-*\d+\.+\d*', depot_address['lat_lon'])[0].replace(',', '')
+        st.markdown(f'Coordenadas: {depot_address["lat"]}, {depot_address["lon"]}')
+
+#st.write(depot_address)
+
+
+# DELIVERIES
+st.header('Entregas')
+
 number_deliveries = st.number_input(label='Número de entregas', min_value=2, step=1, value=12)
 
-# Create a dictionary with the addresses of the delivery locations
 deliveries_dict = {delivery_index + 1: input_address_delivery((delivery_index + 1), locations_example)
                    for delivery_index in range(number_deliveries)}
+
+#st.write(deliveries_dict)
+#st.dataframe(locations_example)
 
 # ROUTE OPTIMIZATION
 st.header('Otimização de rotas')
 
-# Start Route Optimization
-begin_opt = st.button('Iniciar otimização')
+# Necessary variables
+'''num_vehicles = st.number_input(label='Número de veículos', min_value=1, step=1)
+stay_each_stop = st.number_input(label='Período máximo permitido para ficar em cada parada em minutos',
+                                 step=1, value=15)
+max_time_travel = st.number_input(label='Período máximo de cada viagem em minutos',
+                                  step=1, value=150)'''
 
-
+# Functions to find the optimized route
+@st.cache(suppress_st_warning=True)
 def create_data_model():
     """Stores the data for the problem."""
     data = {}
     data['distance_matrix'] = dist_matrix
     data['time_matrix'] = time_matrix
-    data['num_vehicles'] = 3
+    data['num_vehicles'] = 1
     data['depot'] = 0
     return data
 
 
+@st.cache(suppress_st_warning=True)
 def print_solution(data, manager, routing, solution):
     """Prints solution on console."""
     st.write(f'Objective: {solution.ObjectiveValue()} seconds')
@@ -244,7 +259,11 @@ def print_solution(data, manager, routing, solution):
     st.write(f'Total Time of all routes: {total_time} seconds')
 
 
+# Start Route Optimization
+begin_opt = st.button('Iniciar otimização')
+
 if begin_opt:
+
     # Create the matrices
     dist_matrix = [row for row in matrices_example['dist_matrix']]
     time_matrix = [row for row in matrices_example['time_matrix']]
@@ -313,5 +332,24 @@ if begin_opt:
     if solution:
         print_solution(data, manager, routing, solution)
     # [END print_solution]
-    else:
-        st.write('No solution was found.')
+
+# MAP
+
+st.header('Mapa')
+
+# Create the map
+m = folium.Map(location=[depot_address['lat'], depot_address['lon']], zoom_start=11.5)
+
+# Add a marker for depot's location
+folium.Marker(location=[depot_address['lat'], depot_address['lon']],
+              popup='Sua Localização',
+              tooltip=f'Sua Localização\nLat: {depot_address["lat"]}\nLon: {depot_address["lon"]}').add_to(m)
+
+# Add a marker for deliveries' location
+for delivery in deliveries_dict:
+    folium.Marker(location=[deliveries_dict[delivery]['lat'], deliveries_dict[delivery]['lon']],
+                  popup=f'Entrega {delivery}',
+                  tooltip=f'Entrega {delivery}').add_to(m)
+
+# Show the map
+folium_static(m)

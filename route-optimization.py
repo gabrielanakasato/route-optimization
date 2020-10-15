@@ -416,12 +416,12 @@ def route_opt(depot_address, number_deliveries, deliveries_dict, depot_example, 
     max_travel_time = st.number_input(label='Período máximo de uma viagem em minutos', min_value=1, step=1, value=150)
 
     if depot_example == True and deliveries_example == True and number_deliveries == 12:
-        st.write('It IS the example.')
+        # st.write('It IS the example.')
         # Create the matrices
         dist_matrix = [row for row in matrices_example['dist_matrix']]
         time_matrix = [row for row in matrices_example['time_matrix']]
     else:
-        st.write('It is NOT the example.')
+        # st.write('It is NOT the example.')
         get_matrices = st.checkbox(f'Enviar dados para otimização')
 
         if get_matrices:
@@ -498,8 +498,8 @@ def route_opt(depot_address, number_deliveries, deliveries_dict, depot_example, 
     map_solution = folium.Map(location=[depot_address['lat'], depot_address['lon']], zoom_start=11.5)
 
     # List of colors
-    colors = ['lightblue', 'lightgreen', 'pink', 'cadetblue', 'orange', 'purple', 'green',
-              'red', 'darkblue', 'darkred', 'darkgreen', 'darkpurple', 'black', 'beige', 'lightgray']
+    colors = ['darkred', 'green', 'pink',  'orange', 'purple', 'cadetblue', 'darkgreen',
+              'darkblue', 'red','lightblue', 'lightgreen', 'darkpurple', 'black', 'beige', 'lightgray']
 
     # Add a marker for depot's location
     folium.Marker(location=[depot_address['lat'], depot_address['lon']],

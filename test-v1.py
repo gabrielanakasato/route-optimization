@@ -347,19 +347,20 @@ def print_solution(data, manager, routing, solution):
     for vehicle_id in range(data['num_vehicles']):
         index = routing.Start(vehicle_id)
         st.markdown(f'Route for **vehicle {vehicle_id}**')
-        route_each = {}
+        route_each = []
         plan_output = ''
         route_time = 0
         max_route_time = 0
         i = 0
         while not routing.IsEnd(index):
             plan_output += f' {manager.IndexToNode(index)} ->'
-            route_each[i] = index
+            route_each.append(manager.IndexToNode(index))
             previous_index = index
             index = solution.Value(routing.NextVar(index))
             route_time += routing.GetArcCostForVehicle(
                 previous_index, index, vehicle_id)
             i += 1
+        route_each.append(0)
         plan_output += f' {manager.IndexToNode(index)}'
         routes_all[vehicle_id] = route_each
         st.markdown(f'**{plan_output}**')
@@ -368,6 +369,8 @@ def print_solution(data, manager, routing, solution):
         max_route_time = max(route_time, max_route_time)
     # st.markdown(f'**Total Time of all routes: {total_time} seconds**')
     st.markdown(f'**Maximum Time of all routes: {max_route_time} seconds**')
+
+    return routes_all
 
 
 if depot_example == True and deliveries_example == True and number_deliveries == 12:
@@ -395,6 +398,7 @@ else:
 
 
 begin_opt = st.button('Iniciar otimização')
+solution_found = False
 
 if begin_opt:
 
@@ -461,7 +465,39 @@ if begin_opt:
     # Print solution on console.
     # [START print_solution]
     if solution:
-        print_solution(data, manager, routing, solution)
+        routes_all = print_solution(data, manager, routing, solution)
+        solution_found = True
     # [END print_solution]
     else:
         st.write('No solution was found.')
+        solution_found = False
+
+# Map
+# Create the map
+map_solution = folium.Map(location=[depot_address['lat'], depot_address['lon']], zoom_start=11.5)
+colors = ['beige', 'lightblue', 'lightred', 'lightgreen', 'pink', 'lightgray', 'purple', 'cadetblue', 'orange', 'green',
+          'red', 'darkblue', 'darkred', 'darkgreen', 'darkpurple', 'black']
+
+# Add a marker for depot's location
+folium.Marker(location=[depot_address['lat'], depot_address['lon']],
+              popup='Sua Localização',
+              tooltip=f'Sua Localização',).add_to(map_solution)
+
+# Add a marker for deliveries' location
+if solution_found == False:
+    for delivery in deliveries_dict:
+        folium.Marker(location=[deliveries_dict[delivery]['lat'], deliveries_dict[delivery]['lon']],
+                      icon=folium.Icon(color='lightgray', icon=None),
+                      popup=f'Entrega {delivery}',
+                      tooltip=f'Entrega {delivery}').add_to(map_solution)
+else:
+    # st.write('Solution found')
+    for vehicle in routes_all:
+        for delivery_index in routes_all[vehicle][1:-1]:
+            folium.Marker(location=[deliveries_dict[delivery_index]['lat'], deliveries_dict[delivery_index]['lon']],
+                          icon=folium.Icon(color=colors[vehicle], icon=None),
+                          popup=f'Entrega {delivery_index}',
+                          tooltip=f'Entrega {delivery_index}').add_to(map_solution)
+
+# Show the map
+folium_static(map_solution)

@@ -13,6 +13,7 @@ import numpy as np
 import streamlit as st
 
 from dotenv import load_dotenv, find_dotenv
+from folium import plugins
 from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver import routing_enums_pb2
 from selenium import webdriver
@@ -475,8 +476,8 @@ if begin_opt:
 # Map
 # Create the map
 map_solution = folium.Map(location=[depot_address['lat'], depot_address['lon']], zoom_start=11.5)
-colors = ['beige', 'lightblue', 'lightred', 'lightgreen', 'pink', 'lightgray', 'purple', 'cadetblue', 'orange', 'green',
-          'red', 'darkblue', 'darkred', 'darkgreen', 'darkpurple', 'black']
+colors = ['lightblue', 'lightgreen', 'pink', 'cadetblue', 'orange', 'purple', 'green',
+          'red', 'darkblue', 'darkred', 'darkgreen', 'darkpurple', 'black', 'beige', 'lightgray']
 
 # Add a marker for depot's location
 folium.Marker(location=[depot_address['lat'], depot_address['lon']],
@@ -493,11 +494,32 @@ if solution_found == False:
 else:
     # st.write('Solution found')
     for vehicle in routes_all:
+
+        # Group the markers according to the vehicle
         for delivery_index in routes_all[vehicle][1:-1]:
             folium.Marker(location=[deliveries_dict[delivery_index]['lat'], deliveries_dict[delivery_index]['lon']],
                           icon=folium.Icon(color=colors[vehicle], icon=None),
                           popup=f'Entrega {delivery_index}',
                           tooltip=f'Entrega {delivery_index}').add_to(map_solution)
+
+
+        list_coord = []
+        for delivery_index in routes_all[vehicle]:
+            if delivery_index == 0:
+                list_coord.append([depot_address['lat'], depot_address['lon']])
+            else:
+                list_coord.append([deliveries_dict[delivery_index]['lat'], deliveries_dict[delivery_index]['lon']])
+
+        sequence = folium.PolyLine(locations=list_coord,
+                                   weight=1, color=colors[vehicle], opacity=0).add_to(map_solution)
+
+        attr = {'fill': colors[vehicle]}
+
+        plugins.PolyLineTextPath(sequence,
+                                 '\u25BA',
+                                 repeat=True,
+                                 offset=6,
+                                 attributes=attr).add_to(map_solution)
 
 # Show the map
 folium_static(map_solution)

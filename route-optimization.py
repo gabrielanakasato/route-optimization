@@ -101,8 +101,8 @@ def input_address_depot(df_example):
         get_depot_coordinate = st.sidebar.checkbox(f'Enviar sua localização')
         if get_depot_coordinate:
             address_dict['lat_lon'] = search_coordinates(address_dict)
-            address_dict['lat'] = re.findall('-*\d+\.+\d*,', address_dict['lat_lon'])[0].replace(',', '')
-            address_dict['lon'] = re.findall(',-*\d+\.+\d*', address_dict['lat_lon'])[0].replace(',', '')
+            address_dict['lat'] = float(re.findall('-*\d+\.+\d*,', address_dict['lat_lon'])[0].replace(',', ''))
+            address_dict['lon'] = float(re.findall(',-*\d+\.+\d*', address_dict['lat_lon'])[0].replace(',', ''))
             # st.markdown(f'Coordenadas: {address_dict["lat"]}, {address_dict["lon"]}')
 
     return address_dict, example
@@ -205,8 +205,8 @@ def input_address_delivery(index, df_example, depot_address: dict):
         get_depot_coordinate = st.sidebar.checkbox(f'Enviar localização da Entrega {index}')
         if get_depot_coordinate:
             address_dict['lat_lon'] = search_coordinates(address_dict)
-            address_dict['lat'] = re.findall('-*\d+\.+\d*,', address_dict['lat_lon'])[0].replace(',', '')
-            address_dict['lon'] = re.findall(',-*\d+\.+\d*', address_dict['lat_lon'])[0].replace(',', '')
+            address_dict['lat'] = float(re.findall('-*\d+\.+\d*,', address_dict['lat_lon'])[0].replace(',', ''))
+            address_dict['lon'] = float(re.findall(',-*\d+\.+\d*', address_dict['lat_lon'])[0].replace(',', ''))
             # st.markdown(f'Coordenadas: {address_dict["lat"]}, {address_dict["lon"]}')
 
 
@@ -280,6 +280,7 @@ def build_matrices(response):
     return dist_matrix, time_matrix
 
 
+@st.cache(suppress_st_warning=True)
 def create_matrices(data):
     '''
     Creates the distance and time matrices.
@@ -351,7 +352,7 @@ def print_solution(data, manager, routing, solution):
         plan_output += f' {manager.IndexToNode(index)}'
         routes_all[vehicle_id] = route_each
         st.markdown(f'**{plan_output}**')
-        st.write(f'Tempo da rota: {pretty_time_delta(route_time)}')
+        st.markdown(f'Tempo da rota: **{pretty_time_delta(route_time)}**')
         total_time += route_time
         max_route_time = max(route_time, max_route_time)
     # st.markdown(f'**Total Time of all routes: {total_time} seconds**')
@@ -493,20 +494,22 @@ def route_opt(depot_address, number_deliveries, deliveries_dict, depot_example, 
             st.write('No solution was found.')
             solution_found = False
 
+
     # Map
-    # Create the map
-    map_solution = folium.Map(location=[depot_address['lat'], depot_address['lon']], zoom_start=11.5)
 
     # List of colors
-    colors = ['darkred', 'green', 'pink',  'orange', 'purple', 'cadetblue', 'darkgreen',
-              'darkblue', 'red','lightblue', 'lightgreen', 'darkpurple', 'black', 'beige', 'lightgray']
-
-    # Add a marker for depot's location
-    folium.Marker(location=[depot_address['lat'], depot_address['lon']],
-                  popup='Sua Localização',
-                  tooltip=f'Sua Localização', ).add_to(map_solution)
+    colors = ['darkred', 'green', 'pink', 'orange', 'purple', 'cadetblue', 'darkgreen',
+              'darkblue', 'red', 'lightblue', 'lightgreen', 'darkpurple', 'black', 'beige', 'lightgray']
 
     try:
+        # Create the map
+        map_solution = folium.Map(location=[depot_address['lat'], depot_address['lon']], zoom_start=11.5)
+
+        # Add a marker for depot's location
+        folium.Marker(location=[depot_address['lat'], depot_address['lon']],
+                      popup='Sua Localização',
+                      tooltip=f'Sua Localização', ).add_to(map_solution)
+
         # Add a marker for deliveries' location
         if solution_found == False:
             for delivery in deliveries_dict:
@@ -548,12 +551,13 @@ def route_opt(depot_address, number_deliveries, deliveries_dict, depot_example, 
                                          repeat=True,
                                          offset=6,
                                          attributes=attr).add_to(map_solution)
-    except:
-        # If the delivery location has no coordinates
-        pass
+        # Show the map
+        folium_static(map_solution)
 
-    # Show the map
-    folium_static(map_solution)
+    except:
+        # If the location has no coordinates
+        # Show the map
+        folium_static(map_solution)
 
 # Start Streamlit
 depot_address, number_deliveries, deliveries_dict, depot_example, deliveries_example = opt_setup()

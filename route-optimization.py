@@ -25,8 +25,8 @@ uf = ('-', 'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', ' ES', 'GO', 'MA', 'MT', 'M
       'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO')
 
 # Example of locations
-locations_example = pd.read_csv('data/locations_example.csv')
-matrices_example = pd.read_csv('data/matrices_example.csv')
+locations_example = pd.read_csv('https://raw.githubusercontent.com/gabrielanakasato/route-optimization/main/data/locations_example.csv')
+matrices_example = pd.read_csv('https://raw.githubusercontent.com/gabrielanakasato/route-optimization/main/data/matrices_example.csv')
 
 # Convert string to list
 matrices_example['dist_matrix'] = matrices_example['dist_matrix'].apply(ast.literal_eval)

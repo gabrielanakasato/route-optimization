@@ -40,7 +40,8 @@ To do
 - OR-Tools
 
 ## Issues
-- Error appears when there is no coordinates of "Sua localização"
+- Since the Distance Matrix API is a paid one, it is unfeasible to host it and make it available online for everyone to use it.
+- Error appears when there is no coordinates of "Sua localização".
 
 ## To-Do
 - [ ] Write docstrings

@@ -1,7 +1,7 @@
 <h1 align="center">OptRotas</h1>
 
 <p align="center">  
-OptRotas is an app that finds tries to find the best route given locations and period of time
+OptRotas is an app that tries to find the best route given locations and period of time
 </p>
 <p align="center">  
 It was created as the final project for the Ironhack Data Analytics Bootcamp.

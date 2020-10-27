@@ -38,6 +38,7 @@ To do
 - Selenium
 - Distance Matrix API - Google Maps
 - OR-Tools
+- Folium
 
 ## Issues
 - Since the Distance Matrix API is a paid one, it is unfeasible to host it and make it available online for everyone to use it.
@@ -45,3 +46,8 @@ To do
 
 ## To-Do
 - [ ] Write docstrings
+- [ ] Insert a "drop file" section for the API key, so it would be possible to host it
+- [ ] Translation to English
+
+## Improvements
+- Refactor the code

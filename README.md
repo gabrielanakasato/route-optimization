@@ -43,9 +43,10 @@ To do
 ## Issues
 - Since the Distance Matrix API is a paid one, it is unfeasible to host it and make it available online for everyone to use it.
 - Error appears when there is no coordinates of "Sua localização".
+- The higher the number of locations and the lower the number of vehicles, the longer it takes to find the solution.
 
 ## To-Do
-- [ ] Write docstrings
+- [x] Write docstrings
 - [ ] Insert a "drop file" section for the API key, so it would be possible to host it
 - [ ] Translation to English
 

@@ -36,43 +36,121 @@ matrices_example['time_matrix'] = matrices_example['time_matrix'].apply(ast.lite
 
 
 def pretty_time_delta(seconds):
+
+    '''
+    Converts an integer in seconds to a string representing a time delta in days, hours, minutes and seconds
+
+    Parameters
+    ----------
+    seconds: int
+        Seconds represented by an integer
+
+    Returns
+    -------
+    time: str
+        String representing a time delta in days, hours, minutes and seconds
+    '''
+
     sign_string = '-' if seconds < 0 else ''
-    seconds = abs(int(seconds))
+    seconds = abs(seconds)
     days, seconds = divmod(seconds, 86400)
     hours, seconds = divmod(seconds, 3600)
     minutes, seconds = divmod(seconds, 60)
     if days > 0:
-        return '%s%dd%dh%dm%ds' % (sign_string, days, hours, minutes, seconds)
+        time = '%s%dd%dh%dm%ds' % (sign_string, days, hours, minutes, seconds)
     elif hours > 0:
-        return '%s%dh%dm%ds' % (sign_string, hours, minutes, seconds)
+        time = '%s%dh%dm%ds' % (sign_string, hours, minutes, seconds)
     elif minutes > 0:
-        return '%s%dm%ds' % (sign_string, minutes, seconds)
+        time = '%s%dm%ds' % (sign_string, minutes, seconds)
     else:
-        return '%s%ds' % (sign_string, seconds)
+        time = '%s%ds' % (sign_string, seconds)
+
+    return time
+
+
+def search_coordinates(address_dict):
+
+    '''
+    Searches the coordinates of an address using the Google Maps.
+
+    Parameters
+    ----------
+    address_dict: dict
+        Dictionary that contains the data about a location
+
+    Returns
+    -------
+    coordinates: str
+        String that contains the coordinates of the location
+    '''
+
+    url = 'https://www.google.com.br/maps/place/'
+    address_name = address_dict['name']
+    address_number = address_dict['number']
+    address_uf = address_dict['uf']
+    address_city = address_dict['city']
+    url_complete = url + address_name.replace(' ', '+').lower() + ',+' + address_number + ',+' \
+                   + address_city.replace(' ', '+').lower() + ',+' + address_uf.lower()
+
+    # Open the Chrome browser
+    chrome_options = Options()
+    chrome_options.headless = True
+    driver = webdriver.Chrome(executable_path=chrome_path, options=chrome_options)
+
+    # Navigate to webpage
+    driver.get(url_complete)
+
+    # Wait 3 seconds
+    time.sleep(4)
+
+    # Save the current url in a variable (which contains the coordinates)
+    updated_url = driver.current_url
+
+    # Close the browser
+    driver.close()
+
+    # Get the coordinates in a string
+    coordinates = re.findall('-*\d+\.+\d*,-*\d+\.+\d*', updated_url)[0]
+
+    # Print the massage on the screen
+    st.sidebar.markdown('**Localização recebida**')
+
+    return coordinates
 
 
 def input_address_depot(df_example):
 
     '''
-    Creates and returns a dictionary with the depot's address.
-    :param df_example:
-    :return:
+    Creates a dictionary with the depot's address information and checks if the data used is from the example dataframe.
+
+    Parameters
+    ----------
+    df_example: Pandas DataFrame
+        The example dataframe
+
+    Returns
+    -------
+    address_dict: dict
+        Dictionary that contains the data about the depot's location
+    example: bool
+        Returns True if data of the depot's location is from the example dataframe
     '''
 
     address_dict = {}
 
-    address_dict['name'] = st.sidebar.text_input("Digite o endereço da sua localização",
-                                                 df_example.loc[df_example['place'] == 'depot', 'name'][0])
-    address_dict['number'] = st.sidebar.text_input("Digite o número da sua localização",
-                                                   df_example.loc[df_example['place'] == 'depot', 'number'][0])
-    address_dict['uf'] = st.sidebar.selectbox("Escolha o estado da sua localização", uf,
-                                              uf.index(df_example.loc[df_example['place'] == 'depot', 'uf'][0]))
-    address_dict['city'] = st.sidebar.text_input("Digite a cidade da sua localização",
-                                                 df_example.loc[df_example['place'] == 'depot', 'city'][0])
+    address_dict['name'] = st.sidebar.text_input(label="Digite o endereço da sua localização",
+                                                 value=df_example.loc[df_example['place'] == 'depot', 'name'][0]).strip()
+    address_dict['number'] = st.sidebar.text_input(label="Digite o número da sua localização",
+                                                   value=df_example.loc[df_example['place'] == 'depot', 'number'][0])
+    address_dict['uf'] = st.sidebar.selectbox(label="Escolha o estado da sua localização", options=uf,
+                                              index=uf.index(df_example.loc[df_example['place'] == 'depot', 'uf'][0])).strip()
+    address_dict['city'] = st.sidebar.text_input(label="Digite a cidade da sua localização",
+                                                 value=df_example.loc[df_example['place'] == 'depot', 'city'][0]).strip()
 
-    # Title the strings
+    # Standardize the strings
     address_dict['name'] = address_dict['name'].title()
     address_dict['city'] = address_dict['city'].title()
+    address_dict['uf'] = address_dict['uf'].upper()
 
     # Create a complete address
     depot_address_complete = address_dict['name'].title() + ', ' + address_dict['number'] + ' - ' \
@@ -108,71 +186,57 @@ def input_address_depot(df_example):
     return address_dict, example
 
 
-def search_coordinates(address_dict):
-    url = 'https://www.google.com.br/maps/place/'
-    address_name = address_dict['name']
-    address_number = address_dict['number']
-    address_uf = address_dict['uf']
-    address_city = address_dict['city']
-    url_complete = url + address_name.replace(' ', '+').lower() + ',+' + address_number + ',+' \
-                   + address_city.replace(' ', '+').lower() + ',+' + address_uf.lower()
-
-    # Open the Chrome browser
-    chrome_options = Options()
-    chrome_options.headless = True
-    driver = webdriver.Chrome(executable_path=chrome_path, options=chrome_options)
-
-    # Navigate to webpage
-    driver.get(url_complete)
-
-    # Wait 3 seconds
-    time.sleep(4)
-
-    # Save the current url in a variable (which contains the coordinates)
-    updated_url = driver.current_url
-
-    # Close the browser
-    driver.close()
-
-    # Get the coordinates in a string
-    coordinates = re.findall('-*\d+\.+\d*,-*\d+\.+\d*', updated_url)[0]
-
-    st.sidebar.markdown('**Localização recebida**')
-
-    return coordinates
-
-
-def input_address_delivery(index, df_example, depot_address: dict):
+def input_address_delivery(index, df_example, depot_address):
 
     '''
-    Creates and returns a dictionary with address of the delivery location.
-    :return:
+    Creates a dictionary with a location information and checks if the data used is from the example dataframe.
+
+    Parameters
+    ----------
+    index: int
+        Number of deliveries
+    df_example: Pandas DataFrame
+        The example dataframe
+    depot_address: dict
+        Dictionary that contains the data about the depot's location
+
+    Returns
+    -------
+    address_dict: dict
+        Dictionary that contains the data about the location
+    example: bool
+        Returns True if the data of the location is from the example dataframe
     '''
 
+    # Title for the delivery
     st.sidebar.subheader(f'Entrega {index}')
 
     address_dict = {}
     example = None
 
-    # If the index is smaller than 13 (since the example has 12 locations)
+    # If the number of deliveries is smaller than 13 (since the example has only 12 locations)
     if index < df_example.shape[0]:
-        address_dict['person'] = st.sidebar.text_input(f"Digite o nome da pessoa da Entrega {index}",
-                                                       df_example.loc[df_example.index == index, 'place'][index].title())
-        address_dict['name'] = st.sidebar.text_input(f"Digite o endereço da Entrega {index}",
-                                                     df_example.loc[df_example.index == index, 'name'][index])
-        address_dict['number'] = st.sidebar.text_input(f"Digite o número da da Entrega {index}",
-                                                       df_example.loc[df_example.index == index, 'number'][index])
+        address_dict['person'] = st.sidebar.text_input(label=f"Digite o nome da pessoa da Entrega {index}",
+                                                       value=df_example.loc[df_example.index == index, 'place'][index].title()).strip()
+        address_dict['name'] = st.sidebar.text_input(label=f"Digite o endereço da Entrega {index}",
+                                                     value=df_example.loc[df_example.index == index, 'name'][index]).strip()
+        address_dict['number'] = st.sidebar.text_input(label=f"Digite o número da da Entrega {index}",
+                                                       value=df_example.loc[df_example.index == index, 'number'][index]).strip()
     else:
-        address_dict['person'] = st.sidebar.text_input(f"Digite o nome da pessoa da Entrega {index}")
-        address_dict['name'] = st.sidebar.text_input(f"Digite o endereço da Entrega {index}")
-        address_dict['number'] = st.sidebar.text_input(f"Digite o número da da Entrega {index}")
+        address_dict['person'] = st.sidebar.text_input(label=f"Digite o nome da pessoa da Entrega {index}").strip()
+        address_dict['name'] = st.sidebar.text_input(label=f"Digite o endereço da Entrega {index}").strip()
+        address_dict['number'] = st.sidebar.text_input(label=f"Digite o número da da Entrega {index}").strip()
 
-    address_dict['uf'] = st.sidebar.selectbox(f"Escolha o estado da da Entrega {index}", uf, uf.index(depot_address['uf']))
-    address_dict['city'] = st.sidebar.text_input(f"Digite a cidade da Entrega {index}", depot_address['city'])
+    # As default, the city and uf will be the same as the depot's location
+    address_dict['uf'] = st.sidebar.selectbox(label=f"Escolha o estado da da Entrega {index}",
+                                              options=uf, index=uf.index(depot_address['uf']))
+    address_dict['city'] = st.sidebar.text_input(label=f"Digite a cidade da Entrega {index}",
+                                                 value=depot_address['city'])
 
-    # Title the strings
+    # Standardize the strings
     address_dict['name'] = address_dict['name'].title()
     address_dict['city'] = address_dict['city'].title()
+    address_dict['uf'] = address_dict['uf'].upper()
 
     # Create a complete address
     address_complete = address_dict['name'].title() + ', ' + address_dict['number'] + ' - ' \
@@ -187,13 +251,14 @@ def input_address_delivery(index, df_example, depot_address: dict):
 
     # Check if the information is the same as the example
 
+    # If the number of deliveries is smaller than 13 (since the example has only 12 locations) and
+    # the example is being used
     if index < df_example.shape[0] and \
        (address_dict['name'].lower() == df_example.loc[df_example.index == index, 'name'][index].lower()) and \
        (address_dict['number'] == str(df_example.loc[df_example.index == index, 'number'][index])) and \
        (address_dict['uf'].lower() == df_example.loc[df_example.index == index, 'uf'][index].lower()) and \
        (address_dict['city'].lower() == df_example.loc[df_example.index == index, 'city'][index].lower()):
 
-        # If the example is being used
         example = True
         address_dict['lat_lon'] = df_example.loc[df_example.index == index, 'lat_lon'][index]
         address_dict['lat'] = df_example.loc[df_example.index == index, 'lat'][index]
@@ -215,7 +280,18 @@ def input_address_delivery(index, df_example, depot_address: dict):
 
 def create_data(api_key, addresses):
     '''
-    Creates the data
+    Creates a dictionary that contains the API key and the coordinates of the locations
+
+    Parameters
+    ----------
+    api_key: str
+        String that contains the Distance Matrix API key
+    addresses: list
+        List that contains the coordinates of the locations, including the depot's
+    Returns
+    -------
+    data: dict
+        Dictionary that contains the API key and the coordinates of the locations
     '''
 
     data = {}
@@ -231,7 +307,21 @@ def create_data(api_key, addresses):
 
 def request_info(origin_addresses, dest_addresses, api_key):
     '''
-    Build and send request for the given origin and destination addresses
+    Build and send request of the given origin and destination addresses for the Distance Matrix
+
+    Parameters
+    ----------
+    origin_addresses: list
+        List that contains the coordinates of origin locations
+    dest_addresses: list
+        List that contains the coordinates of destination locations
+    api_key: str
+        String that contains the Distance Matrix API key
+
+    Returns
+    -------
+    response: dict
+        Dictionary that contains the Distance Matrix response
     '''
 
     url_beginning = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric'
@@ -239,6 +329,16 @@ def request_info(origin_addresses, dest_addresses, api_key):
     def build_str_addresses(addresses):
         '''
         Builds a pipe-separated string of addresses
+
+        Parameters
+        ----------
+        addresses: list
+            List that contains the coordinates of locations
+
+        Returns
+        -------
+        address_str: str
+            Pipe-separated string of the coordinates of the addresses
         '''
         address_str = ''
 
@@ -261,7 +361,19 @@ def request_info(origin_addresses, dest_addresses, api_key):
 
 def build_matrices(response):
     '''
-    Builds the distance matrix and the time matrix
+    Converts the Distance Matrix response into the distance matrix and the time travel matrix
+
+    Parameters
+    ----------
+    response: dict
+        Dictionary that contains the Distance Matrix response
+
+    Returns
+    -------
+    dist_matrix: list
+        Distance matrix (list that contains list of the distances between the origin and destination addresses)
+    time_matrix: list
+        Time travel matrix (list that contains list of the time travel between the origin and destination addresses)
     '''
 
     dist_matrix = []
@@ -283,13 +395,25 @@ def build_matrices(response):
 @st.cache(suppress_st_warning=True)
 def create_matrices(data):
     '''
-    Creates the distance and time matrices.
+    Makes requests to the Distance Matrix API and creates the distance and time travel matrices.
+
+    Parameters
+    ----------
+    data: dict
+        Dictionary that contains the API key and the coordinates of the locations
+
+    Returns
+    -------
+    dist_matrix: list
+        Distance matrix (list that contains list of the distances between the origin and destination addresses)
+    time_matrix: list
+        Time travel matrix (list that contains list of the time travel between the origin and destination addresses)
     '''
 
     addresses = data["addresses"]
     api_key = data["api_key"]
 
-    # Distance Matrix API only accepts 100 elemnts per request
+    # Distance Matrix API only accepts 100 elements per request
     max_elements = 100
     num_addresses = len(addresses)  # Example: 11
     # Maximum number of rows that can be computes per request
@@ -318,7 +442,25 @@ def create_matrices(data):
 
 
 def create_data_model(number_vehicles, dist_matrix, time_matrix):
-    """Stores the data for the problem."""
+
+    '''
+    Stores the data for the problem
+
+    Parameters
+    ----------
+    number_vehicles: int
+        Number of vehicles
+    dist_matrix: list
+        Distance matrix
+    time_matrix: list
+        Time travel matrix
+
+    Returns
+    -------
+    data: dict
+        Dictionary that contains the data for the problem
+    '''
+
     data = {}
     data['distance_matrix'] = dist_matrix
     data['time_matrix'] = time_matrix
@@ -328,7 +470,27 @@ def create_data_model(number_vehicles, dist_matrix, time_matrix):
 
 
 def print_solution(data, manager, routing, solution):
-    """Prints solution on console."""
+
+    '''
+    Prints the answer on the screen.
+
+    Parameters
+    ----------
+    data: dict
+        Dictionary that contains the data for the problem
+    manager:
+        Routing Index Manager
+    routing:
+        Routing Model
+    solution:
+        Solution of the problem
+
+    Returns
+    -------
+    routes_all: list
+       List containing the sequence of locations of all routes
+    '''
+
     # st.write(f'Objective: {solution.ObjectiveValue()} seconds')
     total_time = 0
     routes_all = {}
@@ -365,7 +527,22 @@ def opt_setup():
 
     '''
     Function to run in the 'Configurações' section.
-    :return:
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    depot_address: dict
+        Data about the depot's location
+    number_deliveries: int
+        Number of deliveries
+    deliveries_dict: dict
+        Data about the deliveries' locations
+    depot_example: bool
+        Returns True if the data of the depot's location is from the example dataframe
+    deliveries_example: bool
+        Returns True if the data of the location is from the example dataframe
     '''
 
     # TITLE
@@ -397,14 +574,26 @@ def opt_setup():
 def route_opt(depot_address, number_deliveries, deliveries_dict, depot_example, deliveries_example, matrices_example):
 
     '''
+    Function to run in the main section and show the results, including the best route for each vehicle and a map.
 
-    :param depot_address:
-    :param number_deliveries:
-    :param deliveries_dict:
-    :param depot_example:
-    :param deliveries_example:
-    :param matrices_example:
-    :return:
+    Parameters
+    ----------
+    depot_address: dict
+        Data about the depot's location
+    number_deliveries: int
+        Number of deliveries
+    deliveries_dict: dict
+        Data about the deliveries' locations
+    depot_example: bool
+        Returns True if the data of the depot's location is from the example dataframe
+    deliveries_example: bool
+        Returns True if the data of the location is from the example dataframe
+    matrices_example: Pandas DataFrame
+        Dataframe containing the example of the distance and time travel matrices
+
+    Returns
+    -------
+
     '''
 
     # ROUTE OPTIMIZATION
@@ -444,20 +633,33 @@ def route_opt(depot_address, number_deliveries, deliveries_dict, depot_example, 
 
     if begin_opt:
 
-        # Instantiate the data problem.
+        # Instantiate the data problem
         data = create_data_model(number_vehicles, dist_matrix, time_matrix)
 
-        # Create the routing index manager.
+        # Create the routing index manager
         manager = pywrapcp.RoutingIndexManager(len(data['time_matrix']),
                                                data['num_vehicles'], data['depot'])
 
-        # Create Routing Model.
+        # Create Routing Model
         routing = pywrapcp.RoutingModel(manager)
 
-        # Create and register a transit callback.
-
+        # Create and register a transit callback
         def time_callback(from_index, to_index):
-            """Returns the distance between the two nodes."""
+            '''
+            Returns the distance between two nodes.
+
+            Parameters
+            ----------
+            from_index: int
+                Index of the origin address
+            to_index:int
+                Index of the destination address
+
+            Returns
+            -------
+            data['time_matrix'][from_node][to_node]: int
+                Time travel of the route from the origin address to the destination address
+            '''
             # Convert from routing variable Index to distance matrix NodeIndex.
             from_node = manager.IndexToNode(from_index)
             to_node = manager.IndexToNode(to_index)

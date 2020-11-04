@@ -30,7 +30,7 @@ When the COVID-19 appeared, people from all around the world had to change their
 - [x] Map showing the route sequence by vehicle
 
 ## Streamlit Demo
-To do
+To-Do
 
 ## Technologies
 - Python
@@ -48,7 +48,7 @@ To do
 ## To-Do
 - [x] Write docstrings
 - [ ] Insert a "drop file" section for the API key, so it would be possible to host it
-- [ ] Translation to English
+- [ ] Translate to English
 
 ## Improvements
 - Refactor the code

@@ -30,7 +30,7 @@ When the COVID-19 appeared, people from all around the world had to change their
 - [x] Map showing the route sequence by vehicle
 
 ## Streamlit Demo
-To-Do
+![Demo v0](https://github.com/gabrielanakasato/route-optimization/blob/main/midia/route-optimization-demo.gif)
 
 ## Technologies
 - Python
@@ -47,7 +47,7 @@ To-Do
 
 ## To-Do
 - [x] Write docstrings
-- [ ] Insert a "drop file" section for the API key, so it would be possible to host it
+- [ ] Insert a box to insert the API key, so it would be possible to host it
 - [ ] Translate to English
 
 ## Improvements

@@ -1,7 +1,7 @@
 <h1 align="center">OptRotas</h1>
 
 <p align="center">  
-OptRotas is an app that tries to find the best route given locations and period of time
+<b>OptRotas</b> is an app that tries to find the <b>best route</b> given <b>locations</b> and <b>period of time</b>.
 </p>
 <p align="center">  
 It was created as the final project for the Ironhack Data Analytics Bootcamp.
@@ -47,7 +47,7 @@ When the COVID-19 appeared, people from all around the world had to change their
 
 ## To-Do
 - [x] Write docstrings
-- [ ] Insert a box to insert the API key, so it would be possible to host it
+- [X] Add a text insert for the API key, so it is be possible to host it
 - [ ] Translate to English
 
 ## Improvements

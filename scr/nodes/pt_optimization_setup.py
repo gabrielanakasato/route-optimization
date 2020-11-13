@@ -87,16 +87,16 @@ class InputAddresses:
                                                           'name'][0]).strip(),
                         'number': st.sidebar.text_input(label="Digite o número da sua localização",
                                                         value=params.locations_example.loc[
-                                                            params.locations_example['place'] == 'depot', 'number'][0]),
-                        'uf': st.sidebar.selectbox(label="Escolha o estado da sua localização", options=params.uf,
-                                                   index=params.uf.index(
-                                                       params.locations_example.loc[params.locations_example[
-                                                                                        'place'] == 'depot',
-                                                                                    'uf'][0])).strip(),
+                                                            params.locations_example['place'] == 'depot',
+                                                            'number'][0]).strip(),
+                        'uf': st.sidebar.text_input(label="Digite a sigla do estado da sua localização",
+                                                    value=params.locations_example.loc[
+                                                        params.locations_example['place'] == 'depot',
+                                                        'uf'][0]).strip(),
                         'city': st.sidebar.text_input(label="Digite a cidade da sua localização",
-                                                      value=params.locations_example.loc[params.locations_example[
-                                                                                             'place'] == 'depot',
-                                                                                         'city'][0]).strip()}
+                                                      value=params.locations_example.loc[
+                                                          params.locations_example['place'] == 'depot',
+                                                          'city'][0]).strip()}
 
         # Standardize the strings
         address_dict['name'] = address_dict['name'].title()
@@ -188,10 +188,10 @@ class InputAddresses:
             address_dict['number'] = st.sidebar.text_input(label=f"Digite o número da da Entrega {index}").strip()
 
         # As default, the city and uf will be the same as the depot's location
-        address_dict['uf'] = st.sidebar.selectbox(label=f"Escolha o estado da da Entrega {index}",
-                                                  options=params.uf, index=params.uf.index(depot_address['uf']))
+        address_dict['uf'] = st.sidebar.text_input(label=f"Digite a sigla do estado da Entrega {index}",
+                                                   value=depot_address['uf']).strip()
         address_dict['city'] = st.sidebar.text_input(label=f"Digite a cidade da Entrega {index}",
-                                                     value=depot_address['city'])
+                                                     value=depot_address['city']).strip()
 
         # Standardize the strings
         address_dict['name'] = address_dict['name'].title()

@@ -1,10 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks,pycharm,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,jupyternotebooks,pycharm,visualstudiocode
 
-### Aditional ###
-extra
-.idea
-
 ### JupyterNotebooks ###
 # gitignore template for Jupyter Notebooks
 # website: http://jupyter.org/
@@ -273,3 +269,8 @@ dmypy.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks,pycharm,visualstudiocode
+
+### Aditional ###
+extra
+.idea
+*.exe

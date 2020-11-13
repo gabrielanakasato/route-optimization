@@ -33,21 +33,31 @@ When the COVID-19 appeared, people from all around the world had to change their
 ![Demo v0](https://github.com/gabrielanakasato/route-optimization/blob/main/midia/route-optimization-demo.gif)
 
 ## Technologies
-- Python
-- Streamlit
-- Selenium
-- Distance Matrix API - Google Maps
-- OR-Tools
-- Folium
+- Python 3.8
+- [Streamlit](https://www.streamlit.io/)
+- [Selenium](https://selenium-python.readthedocs.io/)
+- [Distance Matrix API](https://developers.google.com/maps/documentation/distance-matrix/overview)
+- [OR-Tools](https://developers.google.com/optimization)
+- [Folium](https://python-visualization.github.io/folium/)
+
+## Run this App Locally - Windows
+```
+git clone https://github.com/gabrielanakasato/route-optimization.git
+```
+To run this app, it is required the [Chrome Driver](https://chromedriver.chromium.org/downloads). So, download it and move it to the folder `scr` or change its path in the file `params.py`.
+```
+cd route-optimization/scr
+streamlit run main.py
+```
 
 ## Issues
-- Since the Distance Matrix API is a paid one, it is unfeasible to host it and make it available online for everyone to use it.
-- Error appears when there is no coordinates of "Sua localização".
+- Since the Distance Matrix API is a paid one, it is unfeasible to deploy it and make it available online for everyone to use it.
 - The higher the number of locations and the lower the number of vehicles, the longer it takes to find the solution.
 
 ## To-Do
 - [x] Write docstrings
-- [X] Add a text insert for the API key, so it is be possible to host it
+- [X] Add a text insert for the API key, so it is be possible to deploy it
+- [ ] Deploy it
 - [ ] Translate to English
 
 ## Improvements

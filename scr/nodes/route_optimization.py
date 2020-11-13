@@ -1,11 +1,9 @@
 # Import necessary libraries
 import json
-import os
 from urllib import request
 
 import folium
 import streamlit as st
-from dotenv import load_dotenv, find_dotenv
 from folium import plugins
 from ortools.constraint_solver import pywrapcp
 from ortools.constraint_solver import routing_enums_pb2
@@ -335,9 +333,8 @@ def route_opt(depot_address, number_deliveries, deliveries_dict, depot_example, 
         get_matrices = st.checkbox(f'Enviar dados para otimização')
 
         if get_matrices:
-            # Need to get the matrices
-            load_dotenv(find_dotenv())
-            api_key = os.getenv('google_maps_key')
+
+            api_key = st.text_input(label='Chave da API de Matriz de Distância', type='password').strip()
 
             # Create a list with all addresses
             deliveries_addresses = [each_address['lat_lon']

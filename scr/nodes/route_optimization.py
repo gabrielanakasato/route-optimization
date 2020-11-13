@@ -481,3 +481,5 @@ def route_opt(depot_address, number_deliveries, deliveries_dict, depot_example, 
         # If the location has no coordinates
         # Show the map
         folium_static(map_solution)
+    except KeyError:
+        pass

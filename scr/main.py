@@ -1,6 +1,6 @@
 from params import Params
 from nodes.optimization_setup import opt_setup
-from nodes.optimization import route_opt
+from nodes.route_optimization  import route_opt
 
 if __name__ == '__main__':
     params = Params()

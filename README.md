@@ -6,6 +6,11 @@
 <p align="center">  
 It was created as the final project for the Ironhack Data Analytics Bootcamp.
 </p>
+</p>
+<p align="center">  
+The live app is available <a href="https://optrotas.herokuapp.com/" target="__blank">here</a>.
+</p>
+
 
 ## Table of Content
 - [Motivation](#motivation)
@@ -24,10 +29,11 @@ When the COVID-19 appeared, people from all around the world had to change their
 
 ## Features
 - [x] Input for number of deliveries
-- [x] Input for locations
+- [x] Input for addresses
 - [x] Input for number of vehicles
 - [x] Input for maximum travel time
 - [x] Map showing the route sequence by vehicle
+- [X] Input the Distance Matrix API key
 
 ## Streamlit Demo
 ![Demo v0](https://github.com/gabrielanakasato/route-optimization/blob/main/midia/route-optimization-demo.gif)
@@ -51,13 +57,12 @@ streamlit run main.py
 ```
 
 ## Issues
-- Since the Distance Matrix API is a paid one, it is unfeasible to deploy it and make it available online for everyone to use it.
 - The higher the number of locations and the lower the number of vehicles, the longer it takes to find the solution.
 
 ## To-Do
 - [x] Write docstrings
 - [X] Add a text insert for the API key, so it is be possible to deploy it
-- [ ] Deploy it
+- [X] Deploy it
 - [ ] Translate to English
 
 ## Improvements

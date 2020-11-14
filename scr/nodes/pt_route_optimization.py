@@ -318,53 +318,56 @@ def route_opt(depot_address, number_deliveries, deliveries_dict, depot_example, 
     st.markdown('<h1 align="center">OptRotas</h1>', unsafe_allow_html=True)
 
     st.markdown('<h2 align="center"><b><u>Instruções</u></b></h2>', unsafe_allow_html=True)
-    instructions = st.checkbox(label='Verificar as instruções')
+    instructions = st.checkbox(label='Ler as instruções')
 
     if instructions:
         st.markdown('<h3 align="center"><b>Descrição do Projeto</b></h3>', unsafe_allow_html=True)
-        st.markdown('<p><b>OptRotas</b> é um app que tenta encontrar a <b>melhor rota</b> dados '
-                    '<b>locazaliações</b> e <b>períodos de tempo</b>. </p>'
+        st.markdown('<p><b>OptRotas</b> é um app que tenta encontrar a <b>rota mais rápida</b> que passa por todos as '
+                    '<b>localizações</b> fornecidas dentro de um <b>intervalo de tempo</b>.</p>'
                     '<p>Para saber mais sobre o código deste projeto, acesse '
                     '<a href="https://github.com/gabrielanakasato/route-optimization" target="_blank">aqui</a>.</p>',
                     unsafe_allow_html=True)
+        st.markdown('<h3 align="center"><b>Requisitos</b></h3>', unsafe_allow_html=True)
         st.markdown('<ul><li>Chave da API de Matriz de Distância (<b>opcional</b>)</li></ul>',
                     unsafe_allow_html=True)
         st.markdown('<h3 align="center"><b>Instruções</b></h3>', unsafe_allow_html=True)
         st.markdown('<p>Uma das ferramentas usadas neste projeto foi a '
                     '<a href="https://developers.google.com/maps/documentation/distance-matrix/overview" '
-                    'target="_blank">API de Matriz de Distância</a> do Google e é necessário possuir uma chave para '
+                    'target="_blank">API de Matriz de Distância</a> do Google e é necessário possuir uma '
+                    '<b>chave</b> para '
                     'acessá-la. Por isso, foi criado um exemplo para uma breve simulação para aqueles que não '
                     'a possuem.<p/>',
                     unsafe_allow_html=True)
         st.markdown('<h4 align="center">Para quem <u>não</u> possui a chave</h4>', unsafe_allow_html=True)
-        st.markdown('<p>Neste caso, <b>não altere</b> nenhum campo da seção <b>Configurações</b> na barra lateral.</p>',
+        st.markdown('<p>Neste caso, <b>não altere</b> os campos da seção <b>Configurações</b> na barra lateral.</p>',
                     unsafe_allow_html=True)
         st.markdown('<ol><li>Preencha os campos da seção <b>Otimização de rotas</b> abaixo.</li>'
                     '<li>Quando estiver tudo pronto, clique em <b>Iniciar otimização</b>.</li>'
                     '</ol>', unsafe_allow_html=True)
         st.markdown('<h4 align="center">Para quem <u>possui</u> a chave</h4>', unsafe_allow_html=True)
         st.markdown('<ol><li>Preencha os campos da seção <b>Configurações</b> na barra lateral.</li>'
-                    '<li>Após alterado qualquer informação de cada endereço, clique na caixa de selação <b>Enviar '
-                    'localização</b> do endereço que aparecerá assim que a modificação for feita.</li>'
+                    '<li>Após alterado qualquer informação de endereço, clique na caixa de seleção <b>Enviar '
+                    'localização</b> que aparecerá assim que a modificação for feita.</li>'
                     '<li>Preencha os campos na seção <b>Otimização de rotas</b> abaixo.</li>'
-                    '<li>Clique na caixa de seleção <b>Enviar dados para otimização</b> que aparecerá assim que '
-                    'qualquer alteração for feita na seção Configurações. '
+                    '<li>Clique na caixa de seleção <b>Enviar dados para otimização</b>.'
+                    '<li>Insira a <b>chave da API de Matriz de Distância</b>.'
                     '<li>Clique no botão <b>Iniciar otimização</b>.</li></ol>'
                     '<p><b>OBSERVAÇÕES</b>:</p>'
-                    
                     '<ul><li>É recomendado esperar o app terminar de executar cada ação.</li>'
+                    '<li>Quanto menor o número de veículos disponíveis, maior o tempo de processamento da '
+                    'otimização.</li>'
                     '<li></b>Apenas clique em <b>Enviar dados para otimização</b> <u>se todas os campos estiverem '
                     'preenchidos corretamente</u>, pois, caso seja necessário fazer alguma modificação após marcar a '
-                    'caixa de seleção, uma nova solicitação deverá ser feita à API, sendo necessário desmarcar e marcar '
-                    'novamente a caixa.</li>'
+                    'caixa de seleção, uma nova solicitação deverá ser feita à API, sendo necessário desmarcar e marcar'
+                    ' novamente a caixa.</li>'
                     '</ul>', unsafe_allow_html=True)
 
     # Start Route Optimization
     st.markdown('<h2 align="center"><b><u>Otimização de rotas</u></b></h2>', unsafe_allow_html=True)
-    number_vehicles = st.number_input(label='Número de veículos', min_value=1, step=1)
-    waiting_stop = st.number_input(label='Período máximo de espera em uma parada em minutos', min_value=1, step=1,
+    number_vehicles = st.number_input(label='Número de veículos disponíveis', min_value=1, value=2, step=1)
+    waiting_stop = st.number_input(label='Tempo máximo parado em uma entrega em minutos', min_value=1, step=1,
                                    value=15)
-    max_travel_time = st.number_input(label='Período máximo de uma viagem em minutos', min_value=1, step=1, value=150)
+    max_travel_time = st.number_input(label='Tempo máximo de uma viagem em minutos', min_value=1, step=1, value=150)
 
     if depot_example and deliveries_example and number_deliveries == 12:
         # st.write('It IS the example.')
@@ -436,7 +439,7 @@ def route_opt(depot_address, number_deliveries, deliveries_dict, depot_example, 
         dimension_name = 'Time'
         routing.AddDimension(
             transit_callback_index,
-            waiting_stop * 60,  # Maximum watiing time in each stop
+            waiting_stop * 60,  # Maximum waiting time in each stop
             max_travel_time * 60,  # Vehicle maximum travel time
             True,  # start cumul to zero
             dimension_name)

@@ -266,7 +266,7 @@ def opt_setup(params):
     """
 
     # TITLE
-    st.sidebar.title('Configurações')
+    st.sidebar.markdown('<h1><u>Configurações</u></h1>', unsafe_allow_html=True)
 
     input_address = InputAddresses()
 

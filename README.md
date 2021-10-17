@@ -25,7 +25,7 @@ The live app is available <a href="https://optrotas.herokuapp.com/" target="__bl
 When the COVID-19 appeared, people from all around the world had to change their daily habits to adjust to the new reality. One of them was the online shopping, which had a huge increase. This also greatly impacted small businesses that depend on sales only in physical stores, encouraging many of them to join the e-commerce.
 
 ## Project Status
-:construction: In Progress :construction:
+:white_check_mark: Complete
 
 ## Features
 - [x] Input for number of deliveries

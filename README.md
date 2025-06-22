@@ -8,7 +8,7 @@ It was created as the final project for the Ironhack Data Analytics Bootcamp.
 </p>
 </p>
 <p align="center">  
-The live app is available <a href="https://optrotas.herokuapp.com/" target="__blank">here</a>.
+The live app is available <a href="https://optrotas.herokuapp.com/" target="__blank">here</a> (INACTIVE).
 </p>
 
 
